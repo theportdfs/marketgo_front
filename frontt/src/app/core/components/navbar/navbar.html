@@ -1,0 +1,70 @@
+<nav class="bg-white shadow-sm border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <div class="flex">
+        <div class="flex-shrink-0 flex items-center">
+          <a routerLink="/" class="text-xl font-bold text-indigo-600 tracking-tight">MiniMarket</a>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <!-- Not logged in -->
+        <ng-container *ngIf="!currentUser()">
+          <a routerLink="/login" class="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+            Iniciar Sesión
+          </a>
+          <a routerLink="/register" class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
+            Registrarse
+          </a>
+        </ng-container>
+
+        <!-- Logged in -->
+        <ng-container *ngIf="currentUser() as user">
+          <div class="flex items-center space-x-4">
+            
+            <a *ngIf="user.role === 'admin'" routerLink="/admin" class="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-transparent hover:border-indigo-100">
+              Panel de Admin
+            </a>
+
+            <a *ngIf="user.role === 'merchant'" routerLink="/merchant/dashboard" class="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-transparent hover:border-indigo-100">
+              Mi Tienda
+            </a>
+
+            <a *ngIf="user.role === 'customer'" routerLink="/orders" class="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-transparent hover:border-indigo-100 flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+              Mis Pedidos
+            </a>
+
+            <span class="text-sm text-gray-700 font-medium">Hola, {{ user.name || user.email.split('@')[0] }}</span>
+            <span *ngIf="user.role === 'admin' || user.role === 'merchant'" class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+              {{ user.role === 'admin' ? 'Admin' : 'Merchant' }}
+            </span>
+            <button (click)="logout()" class="text-gray-500 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-transparent hover:border-red-100">
+              Cerrar sesión
+            </button>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Toast/Banner Flotante de Nuevo Pedido -->
+<div *ngIf="newOrderAlert()" class="fixed top-20 right-4 z-50 animate-bounce">
+  <div class="bg-indigo-600 text-white p-4 rounded-xl shadow-2xl flex items-center space-x-4 border-2 border-white ring-4 ring-indigo-300">
+    <div class="bg-white rounded-full p-2">
+      <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+    </div>
+    <div>
+      <h3 class="font-bold text-lg">¡Nuevo Pedido!</h3>
+      <p class="text-indigo-100 text-sm">Valor: ${{ newOrderAlert().total }}</p>
+    </div>
+    <div class="flex flex-col space-y-2 ml-4">
+      <a routerLink="/merchant/orders" (click)="closeOrderAlert()" class="bg-white text-indigo-600 hover:bg-gray-50 text-xs font-bold py-1.5 px-3 rounded-lg text-center transition-colors shadow-sm">
+        Ver Pedido
+      </a>
+      <button (click)="closeOrderAlert()" class="text-indigo-200 hover:text-white text-xs transition-colors">
+        Ignorar
+      </button>
+    </div>
+  </div>
+</div>
